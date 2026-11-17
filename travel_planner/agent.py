@@ -44,3 +44,21 @@ def consult(request: dict, api_key: str, model: str = "openai/gpt-oss-120b") -> 
         """Find hotels matching city, star level, nightly budget, and amenities."""
         return json.dumps(search_hotels(request["destination"], request["effective_hotel_ceiling"],
                                         request["min_stars"], request["amenities"]))
+
+    @tool
+    def places_discovery() -> str:
+        """Find destination attractions ranked by interests and rating."""
+        return json.dumps(discover_places(request["destination"], request["interests"]))
+
+    @tool
+    def weather_lookup() -> str:
+        """Check whether a live Open-Meteo forecast exists for the trip dates."""
+        return json.dumps(get_weather(request["destination"], start, end))
+
+    @tool
+    def budget_estimation(flight_price_per_person: int | None = None,
+                          hotel_price_per_night: int | None = None) -> str:
+        """Estimate the trip in INR. Pass null for an unavailable flight or hotel."""
+        return json.dumps(estimate_budget(flight_price_per_person, hotel_price_per_night,
+                                          (end - start).days, request["travelers"],
+                                          request["daily_local_per_person"], request["rooms"]))
