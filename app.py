@@ -69,3 +69,15 @@ def build_plan(request: dict, api_key: str, model: str) -> dict:
             "agent_error": advice.error, "agent_enabled": bool(api_key),
             "flight_search": flights, "hotel_search": hotels, "place_search": places,
             "hotel_ceiling_used": hotel_ceiling}
+
+city_list = cities()
+previous = st.session_state.get("request", {})
+try:
+    configured_key = os.getenv("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY", "")
+except (FileNotFoundError, RuntimeError):
+    configured_key = os.getenv("GROQ_API_KEY", "")
+with st.sidebar:
+    with st.expander("Developer settings"):
+        api_key = configured_key
+        st.caption("Groq agent ready" if api_key else "Add GROQ_API_KEY to .streamlit/secrets.toml")
+        model = st.text_input("Groq model", value="openai/gpt-oss-120b")
