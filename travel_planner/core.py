@@ -134,3 +134,24 @@ def estimate_budget(flight_price_per_person: int | None, hotel_price_per_night: 
             "hotel": hotel, "food_and_local_transport": local, "known_total": known_total,
             "complete": flight is not None and hotel is not None,
             "note": "Flight estimate is outbound only. Estimate excludes return flights, attraction tickets, taxes, and unlisted fees. Missing components are not included in known_total."}
+
+
+def make_days(start: date, end: date, places: list[dict], pace: str) -> list[dict]:
+    """Spread known places across the trip; label unscheduled days honestly."""
+    count = (end - start).days + 1
+    per_day = {"Relaxed": 1, "Balanced": 2, "Packed": 3}[pace]
+    allocated = [[] for _ in range(count)]
+    for index, place in enumerate(places[:count * per_day]):
+        day_index = index % count
+        allocated[day_index].append(place)
+    flexible = ["Rest and explore a local neighbourhood at your own pace.",
+                "Leave time for food, shopping, or a spontaneous stop."]
+    days = []
+    for offset in range(count):
+        selected = allocated[offset]
+        days.append({"date": (start + timedelta(days=offset)).isoformat(),
+                     "places": selected,
+                     "activity": None if selected else flexible[offset % len(flexible)],
+                     "note": ("Check opening hours and travel time before booking."
+                              if selected else "No venue or cost is assumed for this flexible day.")})
+    return days
