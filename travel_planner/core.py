@@ -120,3 +120,17 @@ def get_weather(city: str, start: date, end: date) -> dict:
     except (HTTPError, URLError, TimeoutError, ValueError, KeyError) as exc:
         return {"days": [], "status": "weather_unavailable",
                 "note": f"Weather service unavailable: {type(exc).__name__}."}
+
+
+def estimate_budget(flight_price_per_person: int | None, hotel_price_per_night: int | None,
+                    nights: int, travelers: int, daily_local_per_person: int,
+                    rooms: int = 1) -> dict:
+    """Calculate known costs; never imply a missing flight costs zero."""
+    flight = flight_price_per_person * travelers if flight_price_per_person is not None else None
+    hotel = hotel_price_per_night * nights * rooms if hotel_price_per_night is not None else None
+    local = daily_local_per_person * travelers * (nights + 1)
+    known_total = sum(value for value in (flight, hotel, local) if value is not None)
+    return {"currency": "INR (assumed from assignment example)", "flight": flight,
+            "hotel": hotel, "food_and_local_transport": local, "known_total": known_total,
+            "complete": flight is not None and hotel is not None,
+            "note": "Flight estimate is outbound only. Estimate excludes return flights, attraction tickets, taxes, and unlisted fees. Missing components are not included in known_total."}
