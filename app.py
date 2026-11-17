@@ -121,3 +121,58 @@ if submitted:
         with st.spinner("Checking options and shaping your trip..."):
             st.session_state["request"] = request
             st.session_state["plan"] = build_plan(request, api_key, model)
+
+plan = st.session_state.get("plan")
+if plan:
+    request = plan["request"]
+    start = date.fromisoformat(request["start"])
+    end = date.fromisoformat(request["end"])
+    st.title(f"Your {request['destination']} plan")
+    st.caption(f"{start:%d %b} – {end:%d %b %Y} · from {request['origin']} · {request['travelers']} traveler(s)")
+    with st.expander("Fine-tune this plan · optional"):
+        st.caption("Your first plan is ready. Change only what matters to you.")
+        with st.form("refine_plan"):
+            a, b = st.columns(2)
+            pace = a.select_slider("Pace", ["Relaxed", "Balanced", "Packed"],
+                                   value=request["pace"])
+            interests = b.multiselect("Things you enjoy",
+                                      ["beach", "fort", "lake", "market", "monument",
+                                       "museum", "park", "temple"], default=request["interests"])
+            a, b, c = st.columns(3)
+            budget_limit = a.number_input("Total budget · optional (₹)", min_value=0,
+                                           value=request["budget"] or 0, step=1000)
+            max_hotel = b.number_input("Hotel per room/night (₹)", min_value=500,
+                                       value=request["max_nightly_price"], step=500)
+            min_stars = c.selectbox("Minimum hotel stars", [1, 2, 3, 4, 5],
+                                    index=request["min_stars"] - 1)
+            with st.expander("More preferences"):
+                a, b, c = st.columns(3)
+                rooms = a.number_input("Rooms", min_value=1, max_value=12,
+                                       value=request["rooms"])
+                daily_local = b.number_input("Food + local travel per person/day (₹)",
+                                             min_value=0, value=request["daily_local_per_person"],
+                                             step=250)
+                amenities = c.multiselect("Hotel amenities",
+                                           ["wifi", "pool", "gym", "breakfast", "parking"],
+                                           default=request["amenities"])
+                if api_key:
+                    notes = st.text_area("Tell the consultant anything else",
+                                         value=request["notes"],
+                                         placeholder="For example: quiet spots or an easy first day")
+                else:
+                    notes = ""
+            refine_clicked = st.form_submit_button("Update my plan")
+        if refine_clicked:
+            updated = {**request, "pace": pace, "interests": interests,
+                       "budget": budget_limit or None, "max_nightly_price": max_hotel,
+                       "min_stars": min_stars, "rooms": rooms,
+                       "daily_local_per_person": daily_local,
+                       "amenities": amenities, "notes": notes}
+            with st.spinner("Updating your plan..."):
+                st.session_state["request"] = updated
+                st.session_state["plan"] = build_plan(updated, api_key, model)
+            st.rerun()
+    if plan["agent_error"]:
+        st.info("The AI consultant was unavailable; the verified dataset plan is still shown below.")
+    elif not plan["agent_enabled"]:
+        st.caption("Built from the supplied travel data and a live weather check when available.")
