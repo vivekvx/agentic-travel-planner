@@ -81,3 +81,43 @@ with st.sidebar:
         api_key = configured_key
         st.caption("Groq agent ready" if api_key else "Add GROQ_API_KEY to .streamlit/secrets.toml")
         model = st.text_input("Groq model", value="openai/gpt-oss-120b")
+
+with st.form("trip_search"):
+    a, b, c, d = st.columns([1, 1, 1.4, .7])
+    origin = a.selectbox("From", city_list, index=city_list.index(previous.get("origin", "Delhi")))
+    destination = b.selectbox("To", city_list, index=city_list.index(previous.get("destination", "Goa")))
+    default_start = date.fromisoformat(previous["start"]) if previous else date.today() + timedelta(days=7)
+    default_end = date.fromisoformat(previous["end"]) if previous else date.today() + timedelta(days=9)
+    date_range = c.date_input("Dates · 3–7 days", value=(default_start, default_end),
+                              min_value=date.today())
+    travelers = d.number_input("Travelers", min_value=1, max_value=12,
+                               value=int(previous.get("travelers", 2)))
+    submitted = st.form_submit_button("Plan my trip", type="primary")
+
+if submitted:
+    if origin == destination:
+        st.session_state.pop("plan", None)
+        st.error("Choose a destination different from your starting city.")
+    elif len(date_range) != 2:
+        st.session_state.pop("plan", None)
+        st.error("Select both travel dates.")
+    elif not 3 <= (date_range[1] - date_range[0]).days + 1 <= 7:
+        st.session_state.pop("plan", None)
+        st.error("Choose a trip lasting 3 to 7 days.")
+    else:
+        request = {"origin": origin, "destination": destination,
+                   "start": date_range[0].isoformat(), "end": date_range[1].isoformat(),
+                   "travelers": travelers,
+                   "rooms": (max(1, (travelers + 1) // 2)
+                             if travelers != previous.get("travelers", travelers)
+                             else previous.get("rooms", max(1, (travelers + 1) // 2))),
+                   "pace": previous.get("pace", "Balanced"),
+                   "max_nightly_price": previous.get("max_nightly_price", 5000),
+                   "daily_local_per_person": previous.get("daily_local_per_person", 1500),
+                   "interests": previous.get("interests", []),
+                   "min_stars": previous.get("min_stars", 3),
+                   "amenities": previous.get("amenities", []),
+                   "budget": previous.get("budget"), "notes": previous.get("notes", "")}
+        with st.spinner("Checking options and shaping your trip..."):
+            st.session_state["request"] = request
+            st.session_state["plan"] = build_plan(request, api_key, model)
