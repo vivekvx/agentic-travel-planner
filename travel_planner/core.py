@@ -92,3 +92,31 @@ def discover_places(city: str, interests: list[str] | None = None) -> dict:
                                   -(row["rating"] or 0), row["name"]))
     return {"options": matches, "count": len(matches),
             "note": note, "invalid_sample_count": len(invalid)}
+
+
+def get_weather(city: str, start: date, end: date) -> dict:
+    """Fetch daily forecast, or explain when dates fall outside its horizon."""
+    if city not in CITY_COORDINATES:
+        return {"days": [], "status": "unsupported_city", "note": "No coordinates for this city."}
+    today = date.today()
+    if start < today or end > today + timedelta(days=15):
+        return {"days": [], "status": "outside_forecast_window",
+                "note": "Open-Meteo forecast is available only for near-term dates. Weather has not been predicted for this trip."}
+    latitude, longitude = CITY_COORDINATES[city]
+    query = urlencode({"latitude": latitude, "longitude": longitude,
+                       "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+                       "timezone": "auto", "start_date": start.isoformat(),
+                       "end_date": end.isoformat()})
+    try:
+        with urlopen(f"https://api.open-meteo.com/v1/forecast?{query}", timeout=10) as response:
+            payload = json.load(response)
+        daily = payload["daily"]
+        days = [{"date": day, "condition": WEATHER_CODES.get(daily["weather_code"][i], "Unknown"),
+                 "high_c": daily["temperature_2m_max"][i],
+                 "low_c": daily["temperature_2m_min"][i],
+                 "rain_probability_percent": daily["precipitation_probability_max"][i]}
+                for i, day in enumerate(daily["time"])]
+        return {"days": days, "status": "forecast", "note": "Live forecast from Open-Meteo; conditions may change."}
+    except (HTTPError, URLError, TimeoutError, ValueError, KeyError) as exc:
+        return {"days": [], "status": "weather_unavailable",
+                "note": f"Weather service unavailable: {type(exc).__name__}."}
