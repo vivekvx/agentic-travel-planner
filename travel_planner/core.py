@@ -39,3 +39,24 @@ def load_data(name: str) -> list[dict]:
 
 def cities() -> list[str]:
     return sorted(CITY_COORDINATES)
+
+
+def search_flights(origin: str, destination: str, departure_date: date,
+                   sort_by: str = "cheapest") -> dict:
+    """Only offer flights whose route and date actually match the request."""
+    route = [row for row in load_data("flights")
+             if row["from"] == origin and row["to"] == destination]
+    matches = [row for row in route
+               if datetime.fromisoformat(row["departure_time"]).date() == departure_date]
+    if sort_by == "fastest":
+        matches.sort(key=lambda row: (datetime.fromisoformat(row["arrival_time"])
+                                      - datetime.fromisoformat(row["departure_time"]), row["price"]))
+    else:
+        matches.sort(key=lambda row: (row["price"], row["arrival_time"]))
+    return {
+        "options": matches[:5],
+        "status": "available_in_dataset" if matches else "no_matching_flight",
+        "note": ("Prices and availability come from the sample dataset, not a live airline."
+                 if matches else "No flight matches this route and date in the sample dataset. Do not present a historical flight as bookable."),
+        "route_sample_count": len(route),
+    }
