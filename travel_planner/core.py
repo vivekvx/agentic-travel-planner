@@ -60,3 +60,17 @@ def search_flights(origin: str, destination: str, departure_date: date,
                  if matches else "No flight matches this route and date in the sample dataset. Do not present a historical flight as bookable."),
         "route_sample_count": len(route),
     }
+
+
+def search_hotels(city: str, max_nightly_price: int | None = None,
+                  min_stars: int = 1, amenities: list[str] | None = None) -> dict:
+    """Rank matching hotels by value while keeping the full price visible."""
+    required = {item.lower() for item in amenities or []}
+    matches = [row for row in load_data("hotels") if row["city"] == city
+               and row["stars"] >= min_stars
+               and (max_nightly_price is None or row["price_per_night"] <= max_nightly_price)
+               and required.issubset({item.lower() for item in row["amenities"]})]
+    matches.sort(key=lambda row: (-row["stars"] / row["price_per_night"],
+                                  row["price_per_night"]))
+    return {"options": matches[:5], "count": len(matches),
+            "note": "Hotel names, amenities, and prices are sample data; availability is unverified."}
