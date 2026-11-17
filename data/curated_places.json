@@ -1,0 +1,322 @@
+[
+  {
+    "place_id": "CUR-BAN-01",
+    "name": "Lalbagh Botanical Garden",
+    "city": "Bangalore",
+    "type": "park",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/karnataka/bengaluru/bengaluru-travel-and-food-guide"
+  },
+  {
+    "place_id": "CUR-BAN-02",
+    "name": "Cubbon Park",
+    "city": "Bangalore",
+    "type": "park",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/karnataka/bengaluru/bengaluru-travel-and-food-guide"
+  },
+  {
+    "place_id": "CUR-BAN-03",
+    "name": "National Gallery of Modern Art",
+    "city": "Bangalore",
+    "type": "museum",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/karnataka/bengaluru/bengaluru-travel-and-food-guide"
+  },
+  {
+    "place_id": "CUR-BAN-04",
+    "name": "Bangalore Palace",
+    "city": "Bangalore",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/karnataka/bengaluru/bengaluru-travel-and-food-guide"
+  },
+  {
+    "place_id": "CUR-BAN-05",
+    "name": "Bull Temple",
+    "city": "Bangalore",
+    "type": "temple",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/karnataka/bengaluru/bengaluru-travel-and-food-guide"
+  },
+  {
+    "place_id": "CUR-CHE-01",
+    "name": "Marina Beach",
+    "city": "Chennai",
+    "type": "beach",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/kapaleeswarar-temple"
+  },
+  {
+    "place_id": "CUR-CHE-02",
+    "name": "Kapaleeswarar Temple",
+    "city": "Chennai",
+    "type": "temple",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/kapaleeswarar-temple"
+  },
+  {
+    "place_id": "CUR-CHE-03",
+    "name": "Fort St George",
+    "city": "Chennai",
+    "type": "fort",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/kapaleeswarar-temple"
+  },
+  {
+    "place_id": "CUR-CHE-04",
+    "name": "Government Museum",
+    "city": "Chennai",
+    "type": "museum",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/kapaleeswarar-temple"
+  },
+  {
+    "place_id": "CUR-CHE-05",
+    "name": "San Thome Basilica",
+    "city": "Chennai",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/kapaleeswarar-temple"
+  },
+  {
+    "place_id": "CUR-DEL-01",
+    "name": "Qutub Minar",
+    "city": "Delhi",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/delhi/delhi"
+  },
+  {
+    "place_id": "CUR-DEL-02",
+    "name": "India Gate",
+    "city": "Delhi",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/delhi/delhi"
+  },
+  {
+    "place_id": "CUR-DEL-03",
+    "name": "Lotus Temple",
+    "city": "Delhi",
+    "type": "temple",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/delhi/delhi"
+  },
+  {
+    "place_id": "CUR-DEL-04",
+    "name": "Red Fort",
+    "city": "Delhi",
+    "type": "fort",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/delhi/delhi"
+  },
+  {
+    "place_id": "CUR-DEL-05",
+    "name": "Humayun’s Tomb",
+    "city": "Delhi",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/delhi/delhi"
+  },
+  {
+    "place_id": "CUR-GOA-01",
+    "name": "Baga Beach",
+    "city": "Goa",
+    "type": "beach",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/trips/trip-listing/where-history-meets-natural-beauty"
+  },
+  {
+    "place_id": "CUR-GOA-02",
+    "name": "Fort Aguada",
+    "city": "Goa",
+    "type": "fort",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/trips/trip-listing/where-history-meets-natural-beauty"
+  },
+  {
+    "place_id": "CUR-GOA-03",
+    "name": "Basilica of Bom Jesus",
+    "city": "Goa",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/trips/trip-listing/where-history-meets-natural-beauty"
+  },
+  {
+    "place_id": "CUR-GOA-04",
+    "name": "Anjuna Beach",
+    "city": "Goa",
+    "type": "beach",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/trips/trip-listing/where-history-meets-natural-beauty"
+  },
+  {
+    "place_id": "CUR-GOA-05",
+    "name": "Chapora Fort",
+    "city": "Goa",
+    "type": "fort",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/trips/trip-listing/where-history-meets-natural-beauty"
+  },
+  {
+    "place_id": "CUR-HYD-01",
+    "name": "Charminar",
+    "city": "Hyderabad",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/telangana/hyderabad/unraveling-the-secrets-of-golkonda-fort"
+  },
+  {
+    "place_id": "CUR-HYD-02",
+    "name": "Golconda Fort",
+    "city": "Hyderabad",
+    "type": "fort",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/telangana/hyderabad/unraveling-the-secrets-of-golkonda-fort"
+  },
+  {
+    "place_id": "CUR-HYD-03",
+    "name": "Salar Jung Museum",
+    "city": "Hyderabad",
+    "type": "museum",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/telangana/hyderabad/unraveling-the-secrets-of-golkonda-fort"
+  },
+  {
+    "place_id": "CUR-HYD-04",
+    "name": "Hussain Sagar",
+    "city": "Hyderabad",
+    "type": "lake",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/telangana/hyderabad/unraveling-the-secrets-of-golkonda-fort"
+  },
+  {
+    "place_id": "CUR-HYD-05",
+    "name": "Chowmahalla Palace",
+    "city": "Hyderabad",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/telangana/hyderabad/unraveling-the-secrets-of-golkonda-fort"
+  },
+  {
+    "place_id": "CUR-JAI-01",
+    "name": "Hawa Mahal",
+    "city": "Jaipur",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/rajasthan/jaipur/city-palace"
+  },
+  {
+    "place_id": "CUR-JAI-02",
+    "name": "Amber Fort",
+    "city": "Jaipur",
+    "type": "fort",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/rajasthan/jaipur/city-palace"
+  },
+  {
+    "place_id": "CUR-JAI-03",
+    "name": "City Palace",
+    "city": "Jaipur",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/rajasthan/jaipur/city-palace"
+  },
+  {
+    "place_id": "CUR-JAI-04",
+    "name": "Jantar Mantar",
+    "city": "Jaipur",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/rajasthan/jaipur/city-palace"
+  },
+  {
+    "place_id": "CUR-JAI-05",
+    "name": "Nahargarh Fort",
+    "city": "Jaipur",
+    "type": "fort",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/rajasthan/jaipur/city-palace"
+  },
+  {
+    "place_id": "CUR-KOL-01",
+    "name": "Victoria Memorial",
+    "city": "Kolkata",
+    "type": "museum",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/west-bengal/kolkata/best-places-to-visit-in-kolkata"
+  },
+  {
+    "place_id": "CUR-KOL-02",
+    "name": "Indian Museum",
+    "city": "Kolkata",
+    "type": "museum",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/west-bengal/kolkata/best-places-to-visit-in-kolkata"
+  },
+  {
+    "place_id": "CUR-KOL-03",
+    "name": "Dakshineswar Kali Temple",
+    "city": "Kolkata",
+    "type": "temple",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/west-bengal/kolkata/best-places-to-visit-in-kolkata"
+  },
+  {
+    "place_id": "CUR-KOL-04",
+    "name": "Belur Math",
+    "city": "Kolkata",
+    "type": "temple",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/west-bengal/kolkata/best-places-to-visit-in-kolkata"
+  },
+  {
+    "place_id": "CUR-KOL-05",
+    "name": "Maidan",
+    "city": "Kolkata",
+    "type": "park",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/west-bengal/kolkata/best-places-to-visit-in-kolkata"
+  },
+  {
+    "place_id": "CUR-MUM-01",
+    "name": "Gateway of India",
+    "city": "Mumbai",
+    "type": "monument",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/maharashtra/mumbai"
+  },
+  {
+    "place_id": "CUR-MUM-02",
+    "name": "Marine Drive",
+    "city": "Mumbai",
+    "type": "park",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/maharashtra/mumbai"
+  },
+  {
+    "place_id": "CUR-MUM-03",
+    "name": "Juhu Beach",
+    "city": "Mumbai",
+    "type": "beach",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/maharashtra/mumbai"
+  },
+  {
+    "place_id": "CUR-MUM-04",
+    "name": "Chowpatty Beach",
+    "city": "Mumbai",
+    "type": "beach",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/maharashtra/mumbai"
+  },
+  {
+    "place_id": "CUR-MUM-05",
+    "name": "National Museum of Indian Cinema",
+    "city": "Mumbai",
+    "type": "museum",
+    "rating": null,
+    "source": "https://www.incredibleindia.gov.in/en/maharashtra/mumbai"
+  }
+]
