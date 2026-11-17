@@ -27,3 +27,15 @@ WEATHER_CODES = {
     71: "Light snow", 73: "Snow", 75: "Heavy snow", 80: "Rain showers",
     81: "Rain showers", 82: "Heavy showers", 95: "Thunderstorm",
 }
+
+
+def load_data(name: str) -> list[dict]:
+    """Load one of the bundled assignment datasets."""
+    if name not in {"flights", "hotels", "places", "curated_places"}:
+        raise ValueError("Unknown dataset")
+    with (DATA_DIR / f"{name}.json").open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def cities() -> list[str]:
+    return sorted(CITY_COORDINATES)
