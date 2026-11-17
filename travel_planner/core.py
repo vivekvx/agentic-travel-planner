@@ -74,3 +74,21 @@ def search_hotels(city: str, max_nightly_price: int | None = None,
                                   row["price_per_night"]))
     return {"options": matches[:5], "count": len(matches),
             "note": "Hotel names, amenities, and prices are sample data; availability is unverified."}
+
+
+def discover_places(city: str, interests: list[str] | None = None) -> dict:
+    """Use sourced attractions when the supplied sample has inconsistent labels."""
+    preferred = {interest.lower() for interest in interests or []}
+    supplied = [row for row in load_data("places") if row["city"] == city]
+    invalid = [row for row in supplied if row["type"].lower() not in row["name"].lower()]
+    if invalid:
+        matches = [row for row in load_data("curated_places") if row["city"] == city]
+        note = (f"{len(invalid)} of {len(supplied)} supplied place records have conflicting names and types. "
+                "The itinerary uses separately sourced attractions; verify hours and travel times.")
+    else:
+        matches = supplied
+        note = "Attraction records have no opening hours, coordinates, or visit durations."
+    matches.sort(key=lambda row: (row["type"].lower() not in preferred,
+                                  -(row["rating"] or 0), row["name"]))
+    return {"options": matches, "count": len(matches),
+            "note": note, "invalid_sample_count": len(invalid)}
