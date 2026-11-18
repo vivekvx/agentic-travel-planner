@@ -176,3 +176,48 @@ if plan:
         st.info("The AI consultant was unavailable; the verified dataset plan is still shown below.")
     elif not plan["agent_enabled"]:
         st.caption("Built from the supplied travel data and a live weather check when available.")
+
+    overview, itinerary, options = st.tabs(["Your plan", "Day by day", "Details & download"])
+    with overview:
+        st.subheader("Consultant's assessment")
+        st.write(plan["agent"])
+        a, b, c = st.columns(3)
+        with a:
+            st.markdown("**Flight**")
+            if plan["flight"]:
+                row = plan["flight"]
+                st.write(f"{row['airline']} · ₹{row['price']:,} per person")
+                st.caption(f"{row['departure_time']} → {row['arrival_time']}")
+            else:
+                st.warning("No flight matches this route and date in the sample data. Flight cost is unknown.")
+                st.link_button("Check current flights", "https://www.google.com/travel/flights")
+        with b:
+            st.markdown("**Hotel suggestion**")
+            if plan["hotel"]:
+                row = plan["hotel"]
+                st.write(f"{row['name']} · {row['stars']} stars")
+                st.caption(f"₹{row['price_per_night']:,} per night · {', '.join(row['amenities'])}")
+            else:
+                if request["budget"] and plan["hotel_ceiling_used"] < request["max_nightly_price"]:
+                    st.warning("No hotel fits the total budget after estimated daily costs. Raise the budget or reduce daily spending.")
+                else:
+                    st.warning("No hotel matches these filters. Try a higher nightly limit or fewer requirements.")
+        with c:
+            st.markdown("**Budget estimate**")
+            st.metric("Known costs", f"₹{plan['budget']['known_total']:,}")
+            st.caption("Complete estimate" if plan["budget"]["complete"] else "Partial estimate; missing costs are excluded")
+        hotel_cost = plan["budget"]["hotel"]
+        local_cost = plan["budget"]["food_and_local_transport"]
+        st.write(f"Hotel: {'₹' + format(hotel_cost, ',') if hotel_cost is not None else 'unknown'}"
+                 f" · Food and local travel: ₹{local_cost:,}"
+                 f" · Outbound flight: {'₹' + format(plan['budget']['flight'], ',') if plan['budget']['flight'] is not None else 'unknown'}")
+        if request["budget"]:
+            if plan["budget"]["known_total"] > request["budget"]:
+                st.warning(f"Known costs already exceed your budget by ₹{plan['budget']['known_total'] - request['budget']:,}.")
+            elif not plan["budget"]["complete"]:
+                st.info("A firm budget comparison needs a matching flight and hotel price.")
+            elif plan["budget"]["known_total"] <= request["budget"]:
+                st.success(f"Estimated known costs are ₹{request['budget'] - plan['budget']['known_total']:,} below your budget.")
+            else:
+                st.warning(f"Estimated known costs exceed your budget by ₹{plan['budget']['known_total'] - request['budget']:,}.")
+        st.caption(plan["budget"]["note"])
