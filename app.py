@@ -239,3 +239,18 @@ if plan:
                 else:
                     st.write(day["activity"])
                 st.caption(day["note"])
+
+    with options:
+        st.caption("These are sample records, not live inventory. Confirm prices, availability, opening hours, and travel times before booking.")
+        st.markdown("**Flight search**")
+        st.write(plan["flight_search"]["note"])
+        if plan["flight_search"]["options"]:
+            st.dataframe(plan["flight_search"]["options"])
+        st.markdown("**Hotel candidates**")
+        st.caption(plan["hotel_search"]["note"])
+        st.dataframe(plan["hotel_search"]["options"])
+        st.markdown("**Attractions**")
+        st.caption(plan["place_search"]["note"])
+        st.dataframe(plan["place_search"]["options"])
+        st.markdown("**Agent tool calls**")
+        st.write(plan["agent_tools"] or "No agent calls; add an API key to enable the AI consultant.")
