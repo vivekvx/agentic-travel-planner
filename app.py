@@ -70,6 +70,7 @@ def build_plan(request: dict, api_key: str, model: str) -> dict:
             "flight_search": flights, "hotel_search": hotels, "place_search": places,
             "hotel_ceiling_used": hotel_ceiling}
 
+
 city_list = cities()
 previous = st.session_state.get("request", {})
 try:
@@ -254,3 +255,13 @@ if plan:
         st.dataframe(plan["place_search"]["options"])
         st.markdown("**Agent tool calls**")
         st.write(plan["agent_tools"] or "No agent calls; add an API key to enable the AI consultant.")
+
+        export = {key: value for key, value in plan.items() if key not in
+                  {"agent_error", "agent_enabled", "flight_search", "hotel_search", "place_search"}}
+        st.download_button("Download itinerary as JSON", json.dumps(export, indent=2),
+                           file_name="travel_plan.json", mime="application/json")
+else:
+    st.caption("A first plan takes only your route, dates, and traveler count. You can add preferences afterward.")
+
+st.markdown('<p class="small-note">Planning suggestions only. This app does not book flights or hotels.</p>',
+            unsafe_allow_html=True)
