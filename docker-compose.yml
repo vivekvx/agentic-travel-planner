@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  travel-planner:
+    build: .
+    container_name: agentic-travel-planner
+    ports:
+      - "8501:8501"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+    volumes:
+      - ./.streamlit:/app/.streamlit:ro
+    restart: unless-stopped
