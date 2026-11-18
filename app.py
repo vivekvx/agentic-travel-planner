@@ -221,3 +221,21 @@ if plan:
             else:
                 st.warning(f"Estimated known costs exceed your budget by ₹{plan['budget']['known_total'] - request['budget']:,}.")
         st.caption(plan["budget"]["note"])
+
+    with itinerary:
+        weather_by_date = {day["date"]: day for day in plan["weather"]["days"]}
+        if not weather_by_date:
+            st.info(plan["weather"]["note"])
+        for index, day in enumerate(plan["days"], start=1):
+            with st.container(border=True):
+                st.subheader(f"Day {index} · {date.fromisoformat(day['date']):%a %d %b}")
+                forecast = weather_by_date.get(day["date"])
+                if forecast:
+                    st.caption(f"{forecast['condition']} · {forecast['low_c']}–{forecast['high_c']}°C · rain chance {forecast['rain_probability_percent']}%")
+                if day["places"]:
+                    for place in day["places"]:
+                        rating = f", {place['rating']}/5" if place.get("rating") is not None else ""
+                        st.write(f"• {place['name']} ({place['type']}{rating})")
+                else:
+                    st.write(day["activity"])
+                st.caption(day["note"])
