@@ -187,7 +187,8 @@ if plan:
                                              min_value=0, value=request["daily_local_per_person"],
                                              step=250)
                 amenities = c.multiselect("Hotel amenities",
-                                           ["wifi", "pool", "gym", "breakfast", "parking"],
+                                           sorted({amenity for hotel in load_data("hotels")
+                                                   for amenity in hotel["amenities"]}),
                                            default=request["amenities"])
                 if api_key:
                     notes = st.text_area("Tell the consultant anything else",
@@ -210,7 +211,9 @@ if plan:
                 old_hotel = plan["hotel"]["hotel_id"] if plan["hotel"] else None
                 new_hotel = revised["hotel"]["hotel_id"] if revised["hotel"] else None
                 messages = []
-                if updated["hotel_id"] and updated["hotel_id"] == new_hotel:
+                if new_hotel is None:
+                    messages.append("No hotel meets the current filters and budget.")
+                elif updated["hotel_id"] and updated["hotel_id"] == new_hotel:
                     messages.append("Your preferred hotel is now selected.")
                 elif old_hotel == new_hotel:
                     messages.append("Hotel unchanged: it still ranks highest among eligible options.")
@@ -222,6 +225,15 @@ if plan:
                     messages.append("Pace changed, but this destination has only five sourced attractions to schedule.")
                 elif old_days != new_days:
                     messages.append("The daily activity order changed.")
+                if updated["interests"] and not any(
+                    item["type"] in updated["interests"] for item in revised["place_search"]["options"]
+                ):
+                    messages.append("No sourced attractions match those interests here; other available attractions are shown.")
+                if revised["budget"]["known_total"] != plan["budget"]["known_total"]:
+                    messages.append(f"Known costs changed from ₹{plan['budget']['known_total']:,} "
+                                    f"to ₹{revised['budget']['known_total']:,}.")
+                if updated["notes"] != request["notes"]:
+                    messages.append("Your note was sent to the AI consultant; it does not directly change the filters.")
                 st.session_state["refinement_feedback"] = " ".join(messages)
             st.rerun()
     if plan["agent_error"]:
