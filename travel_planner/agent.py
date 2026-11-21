@@ -42,8 +42,10 @@ def consult(request: dict, api_key: str, model: str = "openai/gpt-oss-120b") -> 
     @tool
     def hotel_recommendations() -> str:
         """Find hotels matching city, star level, nightly budget, and amenities."""
-        return json.dumps(search_hotels(request["destination"], request["effective_hotel_ceiling"],
-                                        request["min_stars"], request["amenities"]))
+        result = search_hotels(request["destination"], request["effective_hotel_ceiling"],
+                               request["min_stars"], request["amenities"])
+        result["selected_hotel"] = request.get("selected_hotel")
+        return json.dumps(result)
 
     @tool
     def places_discovery() -> str:
@@ -72,7 +74,9 @@ def consult(request: dict, api_key: str, model: str = "openai/gpt-oss-120b") -> 
         "Do not invent availability, places, prices, routes, weather, distances, or opening hours. "
         "Sample records are unverified; never say booked. If no dated flight exists, state that the "
         "flight cost is unknown. Give a concise day-wise itinerary using only places returned by the "
-        "tool, then explain your hotel and activity choices, budget tradeoffs, and one practical next "
+        "tool. If selected_hotel is provided, use that exact hotel and its price in your advice and "
+        "budget; the user may have chosen it manually. Then explain the hotel and activity choices, "
+        "budget tradeoffs, and one practical next "
         "step. If the sample data runs out of places, label remaining time flexible. Do not reveal "
         "private chain of thought."
     ))

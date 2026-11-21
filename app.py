@@ -10,7 +10,7 @@ import streamlit as st
 
 from travel_planner.agent import consult
 from travel_planner.core import (cities, discover_places, estimate_budget, get_weather,
-                                 make_days, search_flights, search_hotels)
+                                 load_data, make_days, search_flights, search_hotels)
 
 st.set_page_config(page_title="Travel Consultant", page_icon="🧭", layout="wide",
                    initial_sidebar_state="collapsed")
@@ -45,14 +45,26 @@ def build_plan(request: dict, api_key: str, model: str) -> dict:
     places = discover_places(request["destination"], request["interests"])
     weather = get_weather(request["destination"], start, end)
     selected_hotel = hotels["options"][0] if hotels["options"] else None
+    hotel_choice_note = None
+    if request.get("hotel_id"):
+        chosen = next((item for item in hotels["options"]
+                       if item["hotel_id"] == request["hotel_id"]), None)
+        if chosen:
+            selected_hotel = chosen
+        else:
+            hotel_choice_note = ("Your selected hotel does not meet the current budget, star, or amenity filters. "
+                                 "The best eligible option is shown instead.")
     estimate = estimate_budget(selected_flight["price"] if selected_flight else None,
                                selected_hotel["price_per_night"] if selected_hotel else None,
                                (end - start).days, request["travelers"],
                                request["daily_local_per_person"], request["rooms"])
     days = make_days(start, end, places["options"], request["pace"])
-    advice = consult({**request, "effective_hotel_ceiling": hotel_ceiling}, api_key, model)
+    advice = consult({**request, "effective_hotel_ceiling": hotel_ceiling,
+                      "selected_hotel": selected_hotel}, api_key, model)
     if not api_key or advice.error:
-        hotel_reason = (f"{selected_hotel['name']} fits your hotel preferences and ranks well for stars per rupee."
+        hotel_reason = ((f"You selected {selected_hotel['name']}; it meets your current filters."
+                         if request.get("hotel_id") == selected_hotel["hotel_id"] else
+                         f"{selected_hotel['name']} fits your hotel preferences and ranks well for stars per rupee.")
                         if selected_hotel else
                         ("No hotel fits the total budget after estimated daily costs; raise the budget or reduce daily spending."
                          if request["budget"] and hotel_ceiling < request["max_nightly_price"]
@@ -68,7 +80,7 @@ def build_plan(request: dict, api_key: str, model: str) -> dict:
             "agent": advice.advice, "agent_tools": advice.tool_calls,
             "agent_error": advice.error, "agent_enabled": bool(api_key),
             "flight_search": flights, "hotel_search": hotels, "place_search": places,
-            "hotel_ceiling_used": hotel_ceiling}
+            "hotel_ceiling_used": hotel_ceiling, "hotel_choice_note": hotel_choice_note}
 
 
 city_list = cities()
@@ -118,8 +130,11 @@ if submitted:
                    "interests": previous.get("interests", []),
                    "min_stars": previous.get("min_stars", 3),
                    "amenities": previous.get("amenities", []),
+                   "hotel_id": (previous.get("hotel_id")
+                                if destination == previous.get("destination") else None),
                    "budget": previous.get("budget"), "notes": previous.get("notes", "")}
         with st.spinner("Checking options and shaping your trip..."):
+            st.session_state.pop("refinement_feedback", None)
             st.session_state["request"] = request
             st.session_state["plan"] = build_plan(request, api_key, model)
 
@@ -130,6 +145,14 @@ if plan:
     end = date.fromisoformat(request["end"])
     st.title(f"Your {request['destination']} plan")
     st.caption(f"{start:%d %b} – {end:%d %b %Y} · from {request['origin']} · {request['travelers']} traveler(s)")
+    preference_text = (f"{request['pace']} pace · "
+                       f"Interests: {', '.join(request['interests']) or 'open to anything'} · "
+                       f"Budget: {'₹' + format(request['budget'], ',') if request['budget'] else 'flexible'}")
+    st.caption(preference_text)
+    if st.session_state.get("refinement_feedback"):
+        st.info(st.session_state["refinement_feedback"])
+    if plan["hotel_choice_note"]:
+        st.warning(plan["hotel_choice_note"])
     with st.expander("Fine-tune this plan · optional"):
         st.caption("Your first plan is ready. Change only what matters to you.")
         with st.form("refine_plan"):
@@ -146,6 +169,16 @@ if plan:
                                        value=request["max_nightly_price"], step=500)
             min_stars = c.selectbox("Minimum hotel stars", [1, 2, 3, 4, 5],
                                     index=request["min_stars"] - 1)
+            hotel_records = [item for item in load_data("hotels")
+                             if item["city"] == request["destination"]]
+            hotel_labels = {"auto": "Let the consultant choose"}
+            hotel_labels.update({item["hotel_id"]:
+                                 f"{item['name']} · {item['stars']} stars · ₹{item['price_per_night']:,}/night · {item['hotel_id']}"
+                                 for item in hotel_records})
+            hotel_choice = st.selectbox("Preferred hotel · optional",
+                                        list(hotel_labels),
+                                        index=list(hotel_labels).index(request.get("hotel_id") or "auto"),
+                                        format_func=lambda hotel_id: hotel_labels[hotel_id])
             with st.expander("More preferences"):
                 a, b, c = st.columns(3)
                 rooms = a.number_input("Rooms", min_value=1, max_value=12,
@@ -168,10 +201,28 @@ if plan:
                        "budget": budget_limit or None, "max_nightly_price": max_hotel,
                        "min_stars": min_stars, "rooms": rooms,
                        "daily_local_per_person": daily_local,
-                       "amenities": amenities, "notes": notes}
+                       "amenities": amenities, "notes": notes,
+                       "hotel_id": None if hotel_choice == "auto" else hotel_choice}
             with st.spinner("Updating your plan..."):
                 st.session_state["request"] = updated
-                st.session_state["plan"] = build_plan(updated, api_key, model)
+                revised = build_plan(updated, api_key, model)
+                st.session_state["plan"] = revised
+                old_hotel = plan["hotel"]["hotel_id"] if plan["hotel"] else None
+                new_hotel = revised["hotel"]["hotel_id"] if revised["hotel"] else None
+                messages = []
+                if updated["hotel_id"] and updated["hotel_id"] == new_hotel:
+                    messages.append("Your preferred hotel is now selected.")
+                elif old_hotel == new_hotel:
+                    messages.append("Hotel unchanged: it still ranks highest among eligible options.")
+                else:
+                    messages.append("The hotel recommendation changed with your preferences.")
+                old_days = [[item["place_id"] for item in day["places"]] for day in plan["days"]]
+                new_days = [[item["place_id"] for item in day["places"]] for day in revised["days"]]
+                if updated["pace"] != request["pace"] and old_days == new_days:
+                    messages.append("Pace changed, but this destination has only five sourced attractions to schedule.")
+                elif old_days != new_days:
+                    messages.append("The daily activity order changed.")
+                st.session_state["refinement_feedback"] = " ".join(messages)
             st.rerun()
     if plan["agent_error"]:
         st.info("The AI consultant was unavailable; the verified dataset plan is still shown below.")
